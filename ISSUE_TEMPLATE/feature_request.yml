@@ -1,0 +1,66 @@
+name: Feature request
+description: Suggest an idea for products
+title: "[FEATURE] "
+labels: ["enhancement"]
+assignees:
+  - jimmy-chen-db
+body:
+  - type: textarea
+    id: feature
+    attributes:
+      label: Feature/Complaint
+      description: A clear and concise description of the feature desired or the lack of it.
+    validations:
+      required: true
+  - type: dropdown
+    id: product
+    attributes:
+      label: Product(s) and version if known
+      multiple: true
+      options:
+        - eCTD Viewer 6.x
+        - eCTD Viewer 7.x
+        - Viewer app 6.x
+        - Viewer app 7.x
+        - X-Viewer 8.x
+        - Enterprise Edition 6.x
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform(s)
+      multiple: true
+      options:
+        - Windows
+        - macOS
+        - Linux
+    validations:
+      required: false
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe the solution you'd like
+      description: A clear and concise description of what you want to happen.
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Describe alternatives you've considered
+      description: A clear and concise description of any alternative solutions or features you've considered.
+    validations:
+      required: false
+  - type: textarea
+    id: design
+    attributes:
+      label: Design & Implementation Considerations
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add any other context or screenshots about the feature request here.
+    validations:
+      required: false
