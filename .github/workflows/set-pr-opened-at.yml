@@ -1,0 +1,111 @@
+# Rule 2: When a PR is opened, auto-set "PR Opened At" on the linked Issue in GitHub Project.
+#
+# Prerequisites:
+#   - Repository secret: PROJECT_TOKEN (PAT with project read/write + issues read scope)
+#   - Repository variable: PROJECT_NUMBER (the Project number, e.g. 1)
+#   - Repository variable: ORG_NAME (GitHub organization login name)
+#   - The Project must have a Date field named "PR Opened At"
+#   - PR body must contain a linked issue reference (e.g. "Closes #123")
+
+name: "Set PR Opened At"
+
+on:
+  pull_request:
+    types: [opened]
+
+env:
+  GH_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+  ORG: ${{ vars.ORG_NAME }}
+  PROJECT_NUMBER: ${{ vars.PROJECT_NUMBER }}
+
+jobs:
+  set-pr-opened-at:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract linked issue number from PR body
+        id: issue
+        run: |
+          BODY="${{ github.event.pull_request.body }}"
+          ISSUE_NUM=$(echo "$BODY" | grep -oP '(?i)(?:closes|fixes|resolves)\s*#\K\d+' | head -1)
+          if [ -z "$ISSUE_NUM" ]; then
+            echo "::warning::No linked issue found in PR body. Skipping."
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "number=$ISSUE_NUM" >> "$GITHUB_OUTPUT"
+          echo "found=true" >> "$GITHUB_OUTPUT"
+          echo "Linked issue: #$ISSUE_NUM"
+
+      - name: Get Project ID and field ID
+        if: steps.issue.outputs.found == 'true'
+        id: project
+        run: |
+          RESULT=$(gh api graphql -f query='
+            query($org: String!, $number: Int!) {
+              organization(login: $org) {
+                projectV2(number: $number) {
+                  id
+                  field(name: "PR Opened At") {
+                    ... on ProjectV2Field { id }
+                  }
+                }
+              }
+            }' -f org="$ORG" -F number="$PROJECT_NUMBER")
+
+          PROJECT_ID=$(echo "$RESULT" | jq -r '.data.organization.projectV2.id')
+          FIELD_ID=$(echo "$RESULT" | jq -r '.data.organization.projectV2.field.id')
+
+          echo "project_id=$PROJECT_ID" >> "$GITHUB_OUTPUT"
+          echo "field_id=$FIELD_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Get Project item ID for the linked issue
+        if: steps.issue.outputs.found == 'true'
+        id: item
+        run: |
+          RESULT=$(gh api graphql -f query='
+            query($owner: String!, $repo: String!, $issueNumber: Int!) {
+              repository(owner: $owner, name: $repo) {
+                issue(number: $issueNumber) {
+                  projectItems(first: 20) {
+                    nodes {
+                      id
+                      project { id }
+                    }
+                  }
+                }
+              }
+            }' \
+            -f owner="$ORG" \
+            -f repo="${{ github.event.repository.name }}" \
+            -F issueNumber=${{ steps.issue.outputs.number }})
+
+          ITEM_ID=$(echo "$RESULT" | jq -r \
+            --arg pid "${{ steps.project.outputs.project_id }}" \
+            '.data.repository.issue.projectItems.nodes[] | select(.project.id == $pid) | .id')
+
+          if [ -z "$ITEM_ID" ]; then
+            echo "::warning::Issue #${{ steps.issue.outputs.number }} is not in the Project. Skipping."
+            exit 0
+          fi
+          echo "id=$ITEM_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Set "PR Opened At" to today
+        if: steps.item.outputs.id
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          gh api graphql -f query='
+            mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $date: Date!) {
+              updateProjectV2ItemFieldValue(input: {
+                projectId: $projectId
+                itemId: $itemId
+                fieldId: $fieldId
+                value: { date: $date }
+              }) {
+                projectV2Item { id }
+              }
+            }' \
+            -f projectId="${{ steps.project.outputs.project_id }}" \
+            -f itemId="${{ steps.item.outputs.id }}" \
+            -f fieldId="${{ steps.project.outputs.field_id }}" \
+            -f date="$TODAY"
+          echo "Set PR Opened At = $TODAY for issue #${{ steps.issue.outputs.number }}"

@@ -1,0 +1,121 @@
+# Rule 4: When a QA Issue is closed with "qa-passed" label, auto-set "QA Passed At".
+#
+# Prerequisites:
+#   - Repository secret: PROJECT_TOKEN (PAT with project read/write scope)
+#   - Repository variable: PROJECT_NUMBER (the Project number, e.g. 1)
+#   - Repository variable: ORG_NAME (GitHub organization login name)
+#   - The Project must have a Date field named "QA Passed At"
+#   - QA Issues must be labeled "qa-passed" before closing to trigger this workflow
+
+name: "QA Passed — Set QA Passed At"
+
+on:
+  issues:
+    types: [closed]
+
+env:
+  GH_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+  ORG: ${{ vars.ORG_NAME }}
+  PROJECT_NUMBER: ${{ vars.PROJECT_NUMBER }}
+
+jobs:
+  qa-passed:
+    if: contains(github.event.issue.labels.*.name, 'qa-passed')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Project metadata
+        id: project
+        run: |
+          RESULT=$(gh api graphql -f query='
+            query($org: String!, $number: Int!) {
+              organization(login: $org) {
+                projectV2(number: $number) {
+                  id
+                  field(name: "QA Passed At") {
+                    ... on ProjectV2Field { id }
+                  }
+                  stateField: field(name: "State") {
+                    ... on ProjectV2SingleSelectField {
+                      id
+                      options { id name }
+                    }
+                  }
+                }
+              }
+            }' -f org="$ORG" -F number="$PROJECT_NUMBER")
+
+          echo "project_id=$(echo "$RESULT" | jq -r '.data.organization.projectV2.id')" >> "$GITHUB_OUTPUT"
+          echo "field_id=$(echo "$RESULT" | jq -r '.data.organization.projectV2.field.id')" >> "$GITHUB_OUTPUT"
+          echo "state_field_id=$(echo "$RESULT" | jq -r '.data.organization.projectV2.stateField.id')" >> "$GITHUB_OUTPUT"
+          echo "qa_passed_option_id=$(echo "$RESULT" | jq -r '.data.organization.projectV2.stateField.options[] | select(.name == "QA Passed") | .id')" >> "$GITHUB_OUTPUT"
+
+      - name: Get Project item ID for this issue
+        id: item
+        run: |
+          RESULT=$(gh api graphql -f query='
+            query($owner: String!, $repo: String!, $issueNumber: Int!) {
+              repository(owner: $owner, name: $repo) {
+                issue(number: $issueNumber) {
+                  projectItems(first: 20) {
+                    nodes {
+                      id
+                      project { id }
+                    }
+                  }
+                }
+              }
+            }' \
+            -f owner="$ORG" \
+            -f repo="${{ github.event.repository.name }}" \
+            -F issueNumber=${{ github.event.issue.number }})
+
+          ITEM_ID=$(echo "$RESULT" | jq -r \
+            --arg pid "${{ steps.project.outputs.project_id }}" \
+            '.data.repository.issue.projectItems.nodes[] | select(.project.id == $pid) | .id')
+
+          if [ -z "$ITEM_ID" ]; then
+            echo "::warning::Issue #${{ github.event.issue.number }} is not in the Project. Skipping."
+            exit 0
+          fi
+          echo "id=$ITEM_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Set "QA Passed At" to today
+        if: steps.item.outputs.id
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          gh api graphql -f query='
+            mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $date: Date!) {
+              updateProjectV2ItemFieldValue(input: {
+                projectId: $projectId
+                itemId: $itemId
+                fieldId: $fieldId
+                value: { date: $date }
+              }) {
+                projectV2Item { id }
+              }
+            }' \
+            -f projectId="${{ steps.project.outputs.project_id }}" \
+            -f itemId="${{ steps.item.outputs.id }}" \
+            -f fieldId="${{ steps.project.outputs.field_id }}" \
+            -f date="$TODAY"
+          echo "Set QA Passed At = $TODAY for issue #${{ github.event.issue.number }}"
+
+      - name: Set State to "QA Passed"
+        if: steps.item.outputs.id
+        run: |
+          gh api graphql -f query='
+            mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+              updateProjectV2ItemFieldValue(input: {
+                projectId: $projectId
+                itemId: $itemId
+                fieldId: $fieldId
+                value: { singleSelectOptionId: $optionId }
+              }) {
+                projectV2Item { id }
+              }
+            }' \
+            -f projectId="${{ steps.project.outputs.project_id }}" \
+            -f itemId="${{ steps.item.outputs.id }}" \
+            -f fieldId="${{ steps.project.outputs.state_field_id }}" \
+            -f optionId="${{ steps.project.outputs.qa_passed_option_id }}"
+          echo "Set State = QA Passed for issue #${{ github.event.issue.number }}"

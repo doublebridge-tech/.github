@@ -1,0 +1,246 @@
+# Rule 3: When a PR is merged, auto-set "Merged At" and create a QA Issue.
+#
+# Prerequisites:
+#   - Repository secret: PROJECT_TOKEN (PAT with project read/write + issues write scope)
+#   - Repository variable: PROJECT_NUMBER (the Project number, e.g. 1)
+#   - Repository variable: ORG_NAME (GitHub organization login name)
+#   - The Project must have Date field "Merged At", Single-select fields "State", "Item Type"
+#   - PR body must contain a linked issue reference (e.g. "Closes #123")
+
+name: "PR Merged — Set Merged At & Create QA Issue"
+
+on:
+  pull_request:
+    types: [closed]
+
+env:
+  GH_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+  ORG: ${{ vars.ORG_NAME }}
+  PROJECT_NUMBER: ${{ vars.PROJECT_NUMBER }}
+
+jobs:
+  pr-merged:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+
+      # ── Step 1: Extract linked issue number ──
+      - name: Extract linked issue number from PR body
+        id: issue
+        run: |
+          BODY="${{ github.event.pull_request.body }}"
+          ISSUE_NUM=$(echo "$BODY" | grep -oP '(?i)(?:closes|fixes|resolves)\s*#\K\d+' | head -1)
+          if [ -z "$ISSUE_NUM" ]; then
+            echo "::warning::No linked issue found in PR body. Skipping."
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "number=$ISSUE_NUM" >> "$GITHUB_OUTPUT"
+          echo "found=true" >> "$GITHUB_OUTPUT"
+
+      # ── Step 2: Get Project metadata (IDs for project, fields, field options) ──
+      - name: Get Project metadata
+        if: steps.issue.outputs.found == 'true'
+        id: project
+        run: |
+          RESULT=$(gh api graphql -f query='
+            query($org: String!, $number: Int!) {
+              organization(login: $org) {
+                projectV2(number: $number) {
+                  id
+                  mergedAtField: field(name: "Merged At") {
+                    ... on ProjectV2Field { id }
+                  }
+                  stateField: field(name: "State") {
+                    ... on ProjectV2SingleSelectField {
+                      id
+                      options { id name }
+                    }
+                  }
+                  itemTypeField: field(name: "Item Type") {
+                    ... on ProjectV2SingleSelectField {
+                      id
+                      options { id name }
+                    }
+                  }
+                  qaOpenedAtField: field(name: "QA Opened At") {
+                    ... on ProjectV2Field { id }
+                  }
+                }
+              }
+            }' -f org="$ORG" -F number="$PROJECT_NUMBER")
+
+          echo "project_id=$(echo "$RESULT" | jq -r '.data.organization.projectV2.id')" >> "$GITHUB_OUTPUT"
+          echo "merged_at_field_id=$(echo "$RESULT" | jq -r '.data.organization.projectV2.mergedAtField.id')" >> "$GITHUB_OUTPUT"
+          echo "state_field_id=$(echo "$RESULT" | jq -r '.data.organization.projectV2.stateField.id')" >> "$GITHUB_OUTPUT"
+          echo "qa_open_option_id=$(echo "$RESULT" | jq -r '.data.organization.projectV2.stateField.options[] | select(.name == "QA Open") | .id')" >> "$GITHUB_OUTPUT"
+          echo "item_type_field_id=$(echo "$RESULT" | jq -r '.data.organization.projectV2.itemTypeField.id')" >> "$GITHUB_OUTPUT"
+          echo "qa_type_option_id=$(echo "$RESULT" | jq -r '.data.organization.projectV2.itemTypeField.options[] | select(.name == "QA") | .id')" >> "$GITHUB_OUTPUT"
+          echo "qa_opened_at_field_id=$(echo "$RESULT" | jq -r '.data.organization.projectV2.qaOpenedAtField.id')" >> "$GITHUB_OUTPUT"
+
+      # ── Step 3: Get Project item ID for the linked issue ──
+      - name: Get Project item ID
+        if: steps.issue.outputs.found == 'true'
+        id: item
+        run: |
+          RESULT=$(gh api graphql -f query='
+            query($owner: String!, $repo: String!, $issueNumber: Int!) {
+              repository(owner: $owner, name: $repo) {
+                issue(number: $issueNumber) {
+                  id
+                  title
+                  projectItems(first: 20) {
+                    nodes {
+                      id
+                      project { id }
+                    }
+                  }
+                }
+              }
+            }' \
+            -f owner="$ORG" \
+            -f repo="${{ github.event.repository.name }}" \
+            -F issueNumber=${{ steps.issue.outputs.number }})
+
+          echo "issue_node_id=$(echo "$RESULT" | jq -r '.data.repository.issue.id')" >> "$GITHUB_OUTPUT"
+          echo "issue_title=$(echo "$RESULT" | jq -r '.data.repository.issue.title')" >> "$GITHUB_OUTPUT"
+
+          ITEM_ID=$(echo "$RESULT" | jq -r \
+            --arg pid "${{ steps.project.outputs.project_id }}" \
+            '.data.repository.issue.projectItems.nodes[] | select(.project.id == $pid) | .id')
+          echo "id=$ITEM_ID" >> "$GITHUB_OUTPUT"
+
+      # ── Step 4: Set "Merged At" to today ──
+      - name: Set "Merged At" to today
+        if: steps.item.outputs.id
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          gh api graphql -f query='
+            mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $date: Date!) {
+              updateProjectV2ItemFieldValue(input: {
+                projectId: $projectId
+                itemId: $itemId
+                fieldId: $fieldId
+                value: { date: $date }
+              }) {
+                projectV2Item { id }
+              }
+            }' \
+            -f projectId="${{ steps.project.outputs.project_id }}" \
+            -f itemId="${{ steps.item.outputs.id }}" \
+            -f fieldId="${{ steps.project.outputs.merged_at_field_id }}" \
+            -f date="$TODAY"
+          echo "Set Merged At = $TODAY for issue #${{ steps.issue.outputs.number }}"
+
+      # ── Step 5: Create QA Issue ──
+      - name: Create QA Issue
+        if: steps.item.outputs.id
+        id: qa_issue
+        run: |
+          QA_TITLE="[QA] ${{ steps.item.outputs.issue_title }}"
+          QA_BODY="## QA Validation
+
+          **Source PR:** #${{ github.event.pull_request.number }}
+          **Source Issue:** #${{ steps.issue.outputs.number }}
+          **Merged by:** @${{ github.event.pull_request.merged_by.login }}
+
+          ## Test Checklist
+          - [ ] Functional testing
+          - [ ] Regression testing
+          - [ ] Edge case testing
+
+          ## Result
+          - [ ] QA Passed
+          - [ ] QA Failed (add details below)
+          "
+
+          RESULT=$(gh issue create \
+            --repo "${{ github.repository }}" \
+            --title "$QA_TITLE" \
+            --body "$QA_BODY" \
+            --label "QA" \
+            --json number,nodeId)
+
+          echo "number=$(echo "$RESULT" | jq -r '.number')" >> "$GITHUB_OUTPUT"
+          echo "node_id=$(echo "$RESULT" | jq -r '.nodeId')" >> "$GITHUB_OUTPUT"
+          echo "Created QA issue #$(echo "$RESULT" | jq -r '.number')"
+
+      # ── Step 6: Add QA Issue to Project ──
+      - name: Add QA Issue to Project
+        if: steps.qa_issue.outputs.node_id
+        id: qa_item
+        run: |
+          RESULT=$(gh api graphql -f query='
+            mutation($projectId: ID!, $contentId: ID!) {
+              addProjectV2ItemById(input: {
+                projectId: $projectId
+                contentId: $contentId
+              }) {
+                item { id }
+              }
+            }' \
+            -f projectId="${{ steps.project.outputs.project_id }}" \
+            -f contentId="${{ steps.qa_issue.outputs.node_id }}")
+          QA_ITEM_ID=$(echo "$RESULT" | jq -r '.data.addProjectV2ItemById.item.id')
+          echo "id=$QA_ITEM_ID" >> "$GITHUB_OUTPUT"
+
+      # ── Step 7: Set QA Issue fields (State = QA Open, Item Type = QA, QA Opened At = today) ──
+      - name: Set QA Issue Project fields
+        if: steps.qa_item.outputs.id
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          PROJECT_ID="${{ steps.project.outputs.project_id }}"
+          QA_ITEM_ID="${{ steps.qa_item.outputs.id }}"
+
+          # Set State = "QA Open"
+          gh api graphql -f query='
+            mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+              updateProjectV2ItemFieldValue(input: {
+                projectId: $projectId
+                itemId: $itemId
+                fieldId: $fieldId
+                value: { singleSelectOptionId: $optionId }
+              }) {
+                projectV2Item { id }
+              }
+            }' \
+            -f projectId="$PROJECT_ID" \
+            -f itemId="$QA_ITEM_ID" \
+            -f fieldId="${{ steps.project.outputs.state_field_id }}" \
+            -f optionId="${{ steps.project.outputs.qa_open_option_id }}"
+
+          # Set Item Type = "QA"
+          gh api graphql -f query='
+            mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+              updateProjectV2ItemFieldValue(input: {
+                projectId: $projectId
+                itemId: $itemId
+                fieldId: $fieldId
+                value: { singleSelectOptionId: $optionId }
+              }) {
+                projectV2Item { id }
+              }
+            }' \
+            -f projectId="$PROJECT_ID" \
+            -f itemId="$QA_ITEM_ID" \
+            -f fieldId="${{ steps.project.outputs.item_type_field_id }}" \
+            -f optionId="${{ steps.project.outputs.qa_type_option_id }}"
+
+          # Set QA Opened At = today
+          gh api graphql -f query='
+            mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $date: Date!) {
+              updateProjectV2ItemFieldValue(input: {
+                projectId: $projectId
+                itemId: $itemId
+                fieldId: $fieldId
+                value: { date: $date }
+              }) {
+                projectV2Item { id }
+              }
+            }' \
+            -f projectId="$PROJECT_ID" \
+            -f itemId="$QA_ITEM_ID" \
+            -f fieldId="${{ steps.project.outputs.qa_opened_at_field_id }}" \
+            -f date="$TODAY"
+
+          echo "QA Issue configured: State=QA Open, Item Type=QA, QA Opened At=$TODAY"
