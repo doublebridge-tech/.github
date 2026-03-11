@@ -15,6 +15,7 @@ body:
         - Viewer app 6.x
         - Viewer app 7.x
         - X-Viewer 8.x
+        - eCTD Publisher
         - Enterprise Edition 6.x
     validations:
       required: true
@@ -31,12 +32,10 @@ body:
       label: To Reproduce
       description: Steps to reproduce the behavior.
       value: |
-        1. Go to '...'
-        2. Click on '...'
-        3. Scroll down to '...'
-        4. See error
+        1. 
+        2. 
     validations:
-      required: true
+      required: false
   - type: textarea
     id: expected
     attributes:
@@ -49,27 +48,6 @@ body:
     attributes:
       label: Screenshots
       description: If applicable, add screenshots to help explain your problem.
-    validations:
-      required: false
-  - type: input
-    id: os
-    attributes:
-      label: OS
-      placeholder: e.g. Windows 11, macOS 14
-    validations:
-      required: false
-  - type: input
-    id: browser
-    attributes:
-      label: Browser
-      placeholder: e.g. Chrome, Safari
-    validations:
-      required: false
-  - type: input
-    id: browser-version
-    attributes:
-      label: Browser Version
-      placeholder: e.g. 22
     validations:
       required: false
   - type: textarea
