@@ -1,0 +1,108 @@
+name: Tech Debt
+description: Track and prioritize technical debt for remediation
+title: "[TECH-DEBT] "
+labels: ["tech-debt"]
+assignees: []
+body:
+  - type: dropdown
+    id: product
+    attributes:
+      label: Product(s) and version if known
+      multiple: true
+      options:
+        - eCTD Viewer 6.x
+        - eCTD Viewer 7.x
+        - Viewer app 6.x
+        - Viewer app 7.x
+        - X-Viewer 8.x
+        - eCTD Publisher
+        - Enterprise Edition 6.x
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Tech Debt Category
+      description: Select all categories that apply.
+      multiple: true
+      options:
+        - Outdated Dependencies
+        - Code Quality / Readability
+        - Missing / Inadequate Tests
+        - Architecture / Design
+        - Dead Code / Unused Features
+        - Performance
+        - Build / CI / Tooling
+        - Documentation Gaps
+        - Error Handling / Logging
+        - Database / Schema
+        - Accessibility / UX Debt
+        - Configuration / Environment
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What the debt is and where it lives.
+    validations:
+      required: true
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact
+      description: How much it hurts if left unaddressed.
+      multiple: false
+      options:
+        - Low -- cosmetic or minor inconvenience
+        - Medium -- slows development or affects reliability
+        - High -- blocks features, causes outages, or is a compliance risk
+    validations:
+      required: true
+  - type: textarea
+    id: current-state
+    attributes:
+      label: Current State
+      description: What the code or system looks like today.
+    validations:
+      required: false
+  - type: textarea
+    id: desired-state
+    attributes:
+      label: Desired State
+      description: What it should look like after remediation.
+    validations:
+      required: false
+  - type: dropdown
+    id: effort
+    attributes:
+      label: Effort
+      description: Rough t-shirt size to resolve.
+      multiple: false
+      options:
+        - Small -- a few hours
+        - Medium -- 1-3 days
+        - Large -- a week or more
+    validations:
+      required: false
+  - type: textarea
+    id: proposed-approach
+    attributes:
+      label: Proposed Approach
+      description: How to tackle this debt.
+    validations:
+      required: false
+  - type: textarea
+    id: affected-components
+    attributes:
+      label: Affected Components
+      description: Files, modules, APIs, or infrastructure involved.
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Links, screenshots, related issues, or other relevant information.
+    validations:
+      required: false
