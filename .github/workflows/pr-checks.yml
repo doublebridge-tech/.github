@@ -1,0 +1,11 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-branch-name:
+    uses: doublebridge-tech/.github/.github/workflows/check-branch-name.yml@main
+    with:
+      branch: ${{ github.head_ref }}
