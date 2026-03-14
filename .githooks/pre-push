@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+#
+# pre-push hook — enforces Cursor branch naming convention.
+# Cursor branches must match: Cursor/<model>-<hex-hash>
+#
+# Activate with:  git config core.hooksPath .githooks
+
+BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null)
+
+if [[ "$BRANCH" == Cursor/* ]]; then
+  if [[ ! "$BRANCH" =~ ^Cursor/[a-zA-Z0-9._-]+-[0-9a-f]{6,}$ ]]; then
+    echo "ERROR: Branch name '$BRANCH' does not follow the Cursor naming convention."
+    echo ""
+    echo "  Expected pattern: Cursor/<model>-<hex-hash>"
+    echo "  Example:          Cursor/claude-4.6-opus-413bba63"
+    echo ""
+    exit 1
+  fi
+fi

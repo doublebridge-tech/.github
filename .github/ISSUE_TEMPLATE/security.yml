@@ -1,0 +1,80 @@
+name: Security Review
+description: Request a security review or flag security requirements for a code implementation
+title: "[SECURITY] "
+labels: ["security"]
+assignees: []
+body:
+  - type: dropdown
+    id: product
+    attributes:
+      label: Product(s) and version if known
+      multiple: true
+      options:
+        - eCTD Viewer 6.x
+        - eCTD Viewer 7.x
+        - X-Viewer 8.x
+        - eCTD Publisher
+        - Enterprise Edition 6.x
+    validations:
+      required: true
+  - type: dropdown
+    id: security-category
+    attributes:
+      label: Security Category
+      description: Select all areas of security concern that apply.
+      multiple: true
+      options:
+        - Authentication / Authorization
+        - Input Validation / Injection
+        - Data Encryption (at rest / in transit)
+        - Secrets / Credential Management
+        - Dependency Vulnerabilities
+        - Access Control / Permissions
+        - Logging / Audit Trail
+        - CORS / CSP / Network Security
+        - File Upload / Download Safety
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What is being implemented and why a security review is needed.
+    validations:
+      required: true
+  - type: textarea
+    id: threat-risk
+    attributes:
+      label: Threat / Risk
+      description: What could go wrong — the threat model or risk being addressed.
+    validations:
+      required: true
+  - type: textarea
+    id: safeguards
+    attributes:
+      label: Proposed Safeguards
+      description: Suggested mitigations, controls, or patterns to apply.
+    validations:
+      required: false
+  - type: textarea
+    id: affected-components
+    attributes:
+      label: Affected Components
+      description: Files, modules, APIs, or infrastructure involved.
+    validations:
+      required: false
+  - type: textarea
+    id: compliance
+    attributes:
+      label: Compliance / Regulatory Notes
+      description: Any relevant standards (e.g., OWASP, SOC 2, HIPAA, 21 CFR Part 11).
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Supporting docs, links, screenshots, or other relevant information.
+    validations:
+      required: false

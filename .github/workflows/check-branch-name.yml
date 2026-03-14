@@ -1,0 +1,26 @@
+name: Check Branch Name
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-branch-name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate Cursor branch naming convention
+        env:
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          if [[ "$BRANCH" == Cursor/* ]]; then
+            if [[ ! "$BRANCH" =~ ^Cursor/[a-zA-Z0-9._-]+-[0-9a-f]{6,}$ ]]; then
+              echo "::error::Branch '$BRANCH' does not follow the Cursor naming convention."
+              echo ""
+              echo "Expected pattern: Cursor/<model>-<hex-hash>"
+              echo "Example:          Cursor/claude-4.6-opus-413bba63"
+              exit 1
+            fi
+            echo "Cursor branch name is valid: $BRANCH"
+          else
+            echo "Non-Cursor branch — skipping name check: $BRANCH"
+          fi
