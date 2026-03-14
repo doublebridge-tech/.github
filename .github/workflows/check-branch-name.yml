@@ -1,8 +1,12 @@
-name: Check Branch Name
+name: Check Branch Name (Reusable)
 
 on:
-  pull_request:
-    branches: [main]
+  workflow_call:
+    inputs:
+      branch:
+        description: Branch name to validate
+        required: true
+        type: string
 
 jobs:
   validate-branch-name:
@@ -10,7 +14,7 @@ jobs:
     steps:
       - name: Validate Cursor branch naming convention
         env:
-          BRANCH: ${{ github.head_ref }}
+          BRANCH: ${{ inputs.branch }}
         run: |
           if [[ "$BRANCH" == Cursor/* ]]; then
             if [[ ! "$BRANCH" =~ ^Cursor/[a-zA-Z0-9._-]+-[0-9a-f]{6,}$ ]]; then
