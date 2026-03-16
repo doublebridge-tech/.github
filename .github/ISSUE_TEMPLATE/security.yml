@@ -1,7 +1,7 @@
 name: Security Review
-description: Request a security review or flag security requirements for a code implementation
+description: Request a security review or flag security vulnerability for a code implementation
 title: "[SECURITY] "
-labels: ["security"]
+labels: []
 assignees: []
 body:
   - type: dropdown
@@ -12,9 +12,10 @@ body:
       options:
         - eCTD Viewer 6.x
         - eCTD Viewer 7.x
-        - X-Viewer 8.x
-        - eCTD Publisher
-        - Enterprise Edition 6.x
+        - eCTD Viewer 8.x
+        - eCTD Publisher 2.x
+        - RADARS/Enterprise Edition 6.x
+        - Other
     validations:
       required: true
   - type: dropdown
@@ -40,7 +41,7 @@ body:
     id: description
     attributes:
       label: Description
-      description: What is being implemented and why a security review is needed.
+      description: What is the security vulnerability or why a security review is needed.
     validations:
       required: true
   - type: textarea
