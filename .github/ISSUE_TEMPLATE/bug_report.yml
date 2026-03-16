@@ -12,11 +12,10 @@ body:
       options:
         - eCTD Viewer 6.x
         - eCTD Viewer 7.x
-        - Viewer app 6.x
-        - Viewer app 7.x
-        - X-Viewer 8.x
-        - eCTD Publisher
-        - Enterprise Edition 6.x
+        - ecTD Viewer 8.x
+        - eCTD Publisher 2.x
+        - Phoenix Server 6.x
+        - Other
     validations:
       required: true
   - type: textarea
