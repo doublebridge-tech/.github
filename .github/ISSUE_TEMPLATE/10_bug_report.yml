@@ -22,7 +22,6 @@ body:
     id: version_discovered
     attributes:
       label: Discovered on Version
-      description: ""
     validations:
       required: false
   - type: textarea
