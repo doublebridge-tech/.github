@@ -12,7 +12,7 @@ body:
       options:
         - eCTD Viewer 6.x
         - eCTD Viewer 7.x
-        - ecTD Viewer 8.x
+        - eCTD Viewer 8.x
         - eCTD Publisher 2.x
         - Phoenix Server 6.x
         - Other
@@ -21,8 +21,8 @@ body:
   - type: textarea
     id: version_discovered
     attributes:
-      label: Dsicovered on Version
-      description: []
+      label: Discovered on Version
+      description: ""
     validations:
       required: false
   - type: textarea
