@@ -18,6 +18,13 @@ body:
         - Other
     validations:
       required: true
+    - type: textarea
+    id: version_discovered
+    attributes:
+      label: Dsicovered on Version
+      description: []
+    validations:
+      required: false
   - type: textarea
     id: description
     attributes:
