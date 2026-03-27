@@ -1,0 +1,97 @@
+name: Content Issue
+description: Report an issue with documentation, website content, or help articles
+labels: ["content"]
+assignees: []
+body:
+  - type: dropdown
+    id: request-type
+    attributes:
+      label: Request Type
+      multiple: false
+      options:
+        - New -- content that does not yet exist
+        - Update -- correction or improvement to existing content
+        - Remove -- outdated or incorrect content that should be deleted
+        - Restructure -- content exists but needs reorganization
+    validations:
+      required: true
+  - type: dropdown
+    id: content-type
+    attributes:
+      label: Content Type
+      description: Select all content types that apply.
+      multiple: true
+      options:
+        - Product Documentation (user guides, manuals)
+        - API Documentation
+        - Release Notes / Changelog
+        - Website Page (marketing, landing page)
+        - Help Article / Knowledge Base
+        - Internal Documentation (README, wiki, runbook)
+        - UI Text / Labels / Error Messages
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: product
+    attributes:
+      label: Product(s) and version if known
+      multiple: true
+      options:
+        - eCTD Viewer 6.x
+        - eCTD Viewer 7.x
+        - eCTD Viewer 8.x
+        - eCTD Publisher 2.x
+        - Phoenix Server 6.x
+        - Other
+    validations:
+      required: false
+  - type: textarea
+    id: location
+    attributes:
+      label: Path / URL
+      description: Provide the file path, URL, or location of the content. For new content, suggest where it should live.
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe what is wrong, missing, or needs to change.
+    validations:
+      required: true
+  - type: textarea
+    id: current-content
+    attributes:
+      label: Current Content (if updating)
+      description: Paste or summarize the existing content that needs changing.
+    validations:
+      required: false
+  - type: textarea
+    id: proposed-content
+    attributes:
+      label: Proposed Content / Changes
+      description: Describe or draft what the content should say.
+    validations:
+      required: false
+  - type: textarea
+    id: audience
+    attributes:
+      label: Target Audience
+      description: Who is this content for? (e.g., end users, developers, admins, internal team)
+    validations:
+      required: false
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots / Mockups
+      description: Attach any visuals that help illustrate the issue.
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add any other context about the content issue here.
+    validations:
+      required: false
