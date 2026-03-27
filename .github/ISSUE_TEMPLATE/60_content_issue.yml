@@ -1,5 +1,5 @@
 name: Content Issue
-description: Report an issue with documentation, website content, or help articles
+description: Report an issue with UI, documentation, website content, or help articles
 labels: ["content"]
 assignees: []
 body:
