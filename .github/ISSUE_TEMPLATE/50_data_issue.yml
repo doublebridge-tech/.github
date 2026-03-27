@@ -1,0 +1,110 @@
+name: Data Issue
+description: Report a data quality, integrity, migration, or pipeline issue
+title: ""
+labels: []
+assignees: []
+body:
+  - type: dropdown
+    id: product
+    attributes:
+      label: Product(s) and version if known
+      multiple: true
+      options:
+        - eCTD Viewer 6.x
+        - eCTD Viewer 7.x
+        - eCTD Viewer 8.x
+        - eCTD Publisher 2.x
+        - Phoenix Server 6.x
+        - Other
+    validations:
+      required: false
+  - type: dropdown
+    id: category
+    attributes:
+      label: Data Issue Category
+      description: Select all categories that apply.
+      multiple: true
+      options:
+        - Data Quality (incorrect values, formatting)
+        - Missing Data
+        - Duplicate Data
+        - Data Integrity / Corruption
+        - Data Loss
+        - Data Migration / Transformation
+        - Schema / Structure
+        - ETL / Pipeline
+        - Performance / Query
+        - Other
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the data issue clearly.
+    validations:
+      required: false
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How severe is the impact of this data issue?
+      multiple: false
+      options:
+        - Low -- cosmetic or minor data discrepancy
+        - Medium -- affects reports or downstream processes
+        - High -- blocks workflows or produces incorrect outputs
+        - Critical -- data loss, compliance risk, or production outage
+    validations:
+      required: false
+  - type: textarea
+    id: affected-data
+    attributes:
+      label: Affected Data / Tables / Entities
+      description: Which databases, tables, fields, records, or data sets are affected?
+    validations:
+      required: false
+  - type: textarea
+    id: discovery
+    attributes:
+      label: How Was This Discovered?
+      description: Describe how the issue was found (e.g., user report, monitoring alert, manual inspection).
+    validations:
+      required: false
+  - type: textarea
+    id: expected-vs-actual
+    attributes:
+      label: Expected vs. Actual Data
+      description: Compare what the data should look like versus what it actually looks like.
+      value: |
+        **Expected:**
+
+        **Actual:**
+    validations:
+      required: false
+  - type: textarea
+    id: sample-data
+    attributes:
+      label: Sample Data / Evidence
+      description: Paste sample records, screenshots, query output, or logs.
+    validations:
+      required: false
+  - type: textarea
+    id: root-cause
+    attributes:
+      label: Root Cause (if known)
+    validations:
+      required: false
+  - type: textarea
+    id: proposed-fix
+    attributes:
+      label: Proposed Fix / Workaround
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add any other context about the data issue here.
+    validations:
+      required: false
