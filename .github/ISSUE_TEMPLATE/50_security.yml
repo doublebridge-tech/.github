@@ -1,7 +1,5 @@
 name: Security Review
 description: Request a security review or flag security vulnerability for a code implementation
-title: "[SECURITY] "
-labels: []
 assignees: []
 body:
   - type: dropdown

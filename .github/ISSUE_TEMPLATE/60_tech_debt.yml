@@ -1,7 +1,5 @@
 name: Tech Debt
 description: Track and prioritize technical debt for remediation
-title: "[TECH-DEBT] "
-labels: ["tech-debt"]
 assignees: []
 body:
   - type: dropdown
