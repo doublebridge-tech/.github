@@ -1,7 +1,6 @@
 name: Data Issue
 description: Report a data quality, integrity, migration, or pipeline issue
-title: ""
-labels: []
+labels: ["data-issue"]
 assignees: []
 body:
   - type: dropdown
