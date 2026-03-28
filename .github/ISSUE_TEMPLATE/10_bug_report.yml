@@ -1,5 +1,5 @@
 name: Bug report
-description: Create a report to help us improve
+description: "Report an interim bug. Note: Customer-reported issues are Defects"
 assignees: []
 body:
   - type: dropdown
