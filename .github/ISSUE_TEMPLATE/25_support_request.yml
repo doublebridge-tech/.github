@@ -1,0 +1,46 @@
+name: Support request
+description: Submit a support request
+type: Support Request
+assignees: []
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of the support request.
+    validations:
+      required: true
+  - type: dropdown
+    id: product
+    attributes:
+      label: Product(s) and version if known
+      multiple: true
+      options:
+        - eCTD Viewer 6.x
+        - eCTD Viewer 7.x
+        - eCTD Viewer 8.x
+        - eCTD Publisher 2.x
+        - Phoenix Server 6.x
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: company
+    attributes:
+      label: Company
+      description: The company name associated with this request.
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Name
+    validations:
+      required: false
+  - type: input
+    id: contact_email
+    attributes:
+      label: Contact Email
+      description: Email address for follow-up communication.
+    validations:
+      required: false
