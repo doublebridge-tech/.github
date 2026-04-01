@@ -1,7 +1,8 @@
 name: Security Review
 description: Request a security review or flag security vulnerability for a code implementation
 type: Security
-assignees: []
+projects: [doublebridge-tech/30]
+assignees: [jimmy-chen-db]
 body:
   - type: dropdown
     id: product

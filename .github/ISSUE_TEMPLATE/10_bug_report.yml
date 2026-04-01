@@ -1,7 +1,8 @@
 name: Bug report
 description: "Report an interim bug. Note: Customer-reported issues are Defects"
 type: Bug
-assignees: []
+projects: [doublebridge-tech/30]
+assignees: [HuQiong-DB]
 body:
   - type: dropdown
     id: product
