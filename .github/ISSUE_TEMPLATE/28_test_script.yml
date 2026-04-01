@@ -1,7 +1,7 @@
 name: Test Script
 description: Capture details for creating or updating test scripts
 type: Test Script
-projects: [V8-autotest]
+projects: [doublebridge-tech/30, doublebridge-tech/25]
 assignees: [HuQiong-DB]
 body:
   - type: input
