@@ -1,7 +1,8 @@
 name: Support request
 description: Submit a support request
 type: Support Request
-assignees: []
+projects: [doublebridge-tech/30]
+assignees: [lmg-db]
 body:
   - type: textarea
     id: description
