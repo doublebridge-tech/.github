@@ -1,8 +1,7 @@
 name: Test Script
 description: Capture details for creating or updating test scripts
 type: Test Script
-projects:
-  - 30
+projects:30
 assignees: [HuQiong-DB]
 body:
   - type: input
