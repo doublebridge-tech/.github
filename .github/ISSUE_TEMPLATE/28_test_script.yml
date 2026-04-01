@@ -1,7 +1,9 @@
 name: Test Script
 description: Capture details for creating or updating test scripts
 type: Test Script
-project: V8-autotest
+projects:
+  - V8-autotest
+  - Master Dashboard
 assignees: [HuQiong-DB]
 body:
   - type: input
