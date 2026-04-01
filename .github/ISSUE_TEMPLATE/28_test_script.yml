@@ -3,7 +3,6 @@ description: Capture details for creating or updating test scripts
 type: Test Script
 projects:
   - V8-autotest
-  - Master Dashboard
 assignees: [HuQiong-DB]
 body:
   - type: input
