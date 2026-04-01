@@ -1,5 +1,6 @@
 name: Feature request
 description: Suggest an idea for products
+type: Feature
 assignees:
   - jimmy-chen-db
 body:
