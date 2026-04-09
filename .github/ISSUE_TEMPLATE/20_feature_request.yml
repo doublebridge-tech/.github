@@ -11,6 +11,13 @@ body:
       description: A clear and concise description of the feature desired or the lack of it.
     validations:
       required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe the solution you'd like
+      description: A clear and concise description of what you want to happen.
+    validations:
+      required: false
   - type: dropdown
     id: product
     attributes:
@@ -22,13 +29,6 @@ body:
         - eCTD Viewer 8.x
         - RADARS/Enterprise Edition
         - eCTD Publisher
-    validations:
-      required: false
-  - type: textarea
-    id: solution
-    attributes:
-      label: Describe the solution you'd like
-      description: A clear and concise description of what you want to happen.
     validations:
       required: false
   - type: textarea
