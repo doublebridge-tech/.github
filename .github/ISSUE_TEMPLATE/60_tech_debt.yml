@@ -26,7 +26,6 @@ body:
       description: Select all categories that apply.
       multiple: true
       options:
-        - Outdated Dependencies
         - Code Quality / Readability
         - Missing / Inadequate Tests
         - Architecture / Design
@@ -36,8 +35,10 @@ body:
         - Documentation Gaps
         - Error Handling / Logging
         - Database / Schema
-        - Accessibility / UX Debt
+        - UX Debt
         - Configuration / Environment
+        - Outdated Dependencies
+        - Security
     validations:
       required: true
   - type: textarea
