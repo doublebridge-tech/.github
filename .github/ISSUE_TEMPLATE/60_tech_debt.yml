@@ -29,8 +29,6 @@ body:
         - Outdated Dependencies
         - Code quality / Readability
         - Missing / Inadequate tests
-        - Code Quality / Readability
-        - Missing / Inadequate Tests
         - Architecture / Design
         - Dead code / Unused features
         - Performance / Scalability
@@ -48,36 +46,8 @@ body:
     attributes:
       label: Tech debt description
       description: What the tech debt is and where it lives.
-        - Documentation Gaps
-        - Error Handling / Logging
-        - Database / Schema
-        - UX Debt
-        - Configuration / Environment
-        - Outdated Dependencies
-        - Security
     validations:
       required: true
-  - type: textarea
-    id: current-state
-    attributes:
-      label: Current State
-      description: What the code or system looks like today.
-    validations:
-      required: true
-  - type: textarea
-    id: desired-state
-    attributes:
-      label: Desired State
-      description: What it should look like after remediation.
-    validations:
-      required: false
-  - type: textarea
-    id: proposed-approach
-    attributes:
-      label: Proposed Approach
-      description: How to tackle this debt.
-    validations:
-      required: false
   - type: dropdown
     id: impact
     attributes:
@@ -125,7 +95,6 @@ body:
       required: false
   - type: textarea
     id: affected_components
-    id: affected-components
     attributes:
       label: Affected Components
       description: Files, modules, APIs, or infrastructure involved.
