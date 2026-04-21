@@ -1,7 +1,8 @@
 name: Test Script
 description: Capture details for creating or updating test scripts
 type: Test Script
-projects: [doublebridge-tech/30, doublebridge-tech/25]
+projects:
+  - doublebridge-tech/30
 assignees: [HuQiong-DB]
 body:
   - type: textarea

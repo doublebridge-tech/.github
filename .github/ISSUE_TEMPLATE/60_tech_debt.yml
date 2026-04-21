@@ -5,9 +5,9 @@ projects: [doublebridge-tech/30]
 assignees: [jimmy-chen-db]
 body:
   - type: dropdown
-    id: product
+    id: affected_product
     attributes:
-      label: Product(s) and version if known
+      label: Affected products and versions if known
       multiple: true
       options:
         - eCTD Viewer 6.x
@@ -18,20 +18,36 @@ body:
         - eCTD Publisher
         - Enterprise Edition 6.x
     validations:
-      required: true
+      required: false
   - type: dropdown
-    id: category
+    id: tech_debt_category
     attributes:
-      label: Tech Debt Category
+      label: Tech debt category
       description: Select all categories that apply.
       multiple: true
       options:
+        - Outdated Dependencies
+        - Code quality / Readability
+        - Missing / Inadequate tests
         - Code Quality / Readability
         - Missing / Inadequate Tests
         - Architecture / Design
-        - Dead Code / Unused Features
-        - Performance
+        - Dead code / Unused features
+        - Performance / Scalability
         - Build / CI / Tooling
+        - Documentation gaps
+        - Error handling / Logging
+        - Database / Schema issues
+        - Accessibility / UX debt
+        - Configuration / Environment issues
+        - Security issues
+    validations:
+      required: true
+  - type: textarea
+    id: tech_debt_description
+    attributes:
+      label: Tech debt description
+      description: What the tech debt is and where it lives.
         - Documentation Gaps
         - Error Handling / Logging
         - Database / Schema
@@ -74,6 +90,20 @@ body:
         - High -- blocks features, causes outages, or is a compliance risk
     validations:
       required: true
+  - type: textarea
+    id: current_state
+    attributes:
+      label: Current State
+      description: What the code or system looks like today.
+    validations:
+      required: false
+  - type: textarea
+    id: desired_state
+    attributes:
+      label: Desired State
+      description: What it should look like after remediation.
+    validations:
+      required: false
   - type: dropdown
     id: effort
     attributes:
@@ -87,6 +117,14 @@ body:
     validations:
       required: false
   - type: textarea
+    id: proposed_approach
+    attributes:
+      label: Proposed Approach
+      description: How to tackle this debt.
+    validations:
+      required: false
+  - type: textarea
+    id: affected_components
     id: affected-components
     attributes:
       label: Affected Components
