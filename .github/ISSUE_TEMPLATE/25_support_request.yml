@@ -4,16 +4,16 @@ type: Support Request
 assignees: []
 body:
   - type: textarea
-    id: description
+    id: support_request_description
     attributes:
-      label: Description
+      label: Support request description
       description: A clear and concise description of the support request.
     validations:
       required: true
   - type: dropdown
-    id: product
+    id: affected_product
     attributes:
-      label: Product(s) and version if known
+      label: Affected products and versions if known
       multiple: true
       options:
         - eCTD Viewer 6.x
@@ -23,24 +23,25 @@ body:
         - Phoenix Server 6.x
         - Other
     validations:
-      required: true
+      required: false
   - type: input
-    id: company
+    id: company_name
     attributes:
-      label: Company
+      label: Company name
       description: The company name associated with this request.
     validations:
       required: true
   - type: input
-    id: contact
+    id: contact_name
     attributes:
-      label: Contact Name
+      label: Contact name
+      description: The name of the contact associated with this request.
     validations:
       required: false
   - type: input
     id: contact_email
     attributes:
-      label: Contact Email
-      description: Email address for follow-up communication.
+      label: Contact email
+      description: The email address of the contact associated with this request.
     validations:
       required: false

@@ -7,34 +7,29 @@ body:
   - type: textarea
     id: feature
     attributes:
-      label: Feature
+      label: Feature/Solution you'd like to see
       description: A clear and concise description of the feature desired or the lack of it.
     validations:
       required: true
-  - type: dropdown
-    id: product
+  - type: textarea
+    id: functional_specification
     attributes:
-      label: Product(s) and version if known
-      multiple: true
-      options:
-        - eCTD Viewer 6.x
-        - ecTD Viewer 7.x
-        - eCTD Viewer 8.x
-        - RADARS/Enterprise Edition
-        - eCTD Publisher
+      label: Functional Specification
+      description: A detailed specification of the feature's behavior, inputs, outputs, and constraints.
     validations:
       required: false
   - type: textarea
-    id: solution
+    id: acceptance_criteria
     attributes:
-      label: Describe the solution you'd like
-      description: A clear and concise description of what you want to happen.
+      label: Acceptance Criteria
+      description: The criteria that must be met for the feature to be considered complete.
     validations:
-      required: false
+      required: true
   - type: textarea
-    id: design
+    id: design_considerations
     attributes:
       label: Design & Implementation Considerations
+      description: Considerations for the design and implementation of the feature.
     validations:
       required: false
   - type: textarea

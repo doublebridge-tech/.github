@@ -4,9 +4,9 @@ type: Tech Debt
 assignees: []
 body:
   - type: dropdown
-    id: product
+    id: affected_product
     attributes:
-      label: Product(s) and version if known
+      label: Affected products and versions if known
       multiple: true
       options:
         - eCTD Viewer 6.x
@@ -17,33 +17,34 @@ body:
         - eCTD Publisher
         - Enterprise Edition 6.x
     validations:
-      required: true
+      required: false
   - type: dropdown
-    id: category
+    id: tech_debt_category
     attributes:
-      label: Tech Debt Category
+      label: Tech debt category
       description: Select all categories that apply.
       multiple: true
       options:
         - Outdated Dependencies
-        - Code Quality / Readability
-        - Missing / Inadequate Tests
+        - Code quality / Readability
+        - Missing / Inadequate tests
         - Architecture / Design
-        - Dead Code / Unused Features
-        - Performance
+        - Dead code / Unused features
+        - Performance / Scalability
         - Build / CI / Tooling
-        - Documentation Gaps
-        - Error Handling / Logging
-        - Database / Schema
-        - Accessibility / UX Debt
-        - Configuration / Environment
+        - Documentation gaps
+        - Error handling / Logging
+        - Database / Schema issues
+        - Accessibility / UX debt
+        - Configuration / Environment issues
+        - Security issues
     validations:
       required: true
   - type: textarea
-    id: description
+    id: tech_debt_description
     attributes:
-      label: Description
-      description: What the debt is and where it lives.
+      label: Tech debt description
+      description: What the tech debt is and where it lives.
     validations:
       required: true
   - type: dropdown
@@ -59,14 +60,14 @@ body:
     validations:
       required: true
   - type: textarea
-    id: current-state
+    id: current_state
     attributes:
       label: Current State
       description: What the code or system looks like today.
     validations:
       required: false
   - type: textarea
-    id: desired-state
+    id: desired_state
     attributes:
       label: Desired State
       description: What it should look like after remediation.
@@ -85,14 +86,14 @@ body:
     validations:
       required: false
   - type: textarea
-    id: proposed-approach
+    id: proposed_approach
     attributes:
       label: Proposed Approach
       description: How to tackle this debt.
     validations:
       required: false
   - type: textarea
-    id: affected-components
+    id: affected_components
     attributes:
       label: Affected Components
       description: Files, modules, APIs, or infrastructure involved.
