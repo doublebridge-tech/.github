@@ -41,7 +41,7 @@ body:
         - Phoenix Server 6.x
         - Other
     validations:
-      required: true
+      required: false
   - type: textarea
     id: screenshots_or_logs
     attributes:

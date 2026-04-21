@@ -17,7 +17,7 @@ body:
         - RADARS/Enterprise Edition 6.x
         - Other
     validations:
-      required: true
+      required: false
   - type: dropdown
     id: security-category
     attributes:
