@@ -1,8 +1,8 @@
 name: Feature request
 description: Suggest an idea for products
 type: Feature
-assignees:
-  - jimmy-chen-db
+projects: [doublebridge-tech/30]
+assignees: [lmg-db, jimmy-chen-db]
 body:
   - type: textarea
     id: feature

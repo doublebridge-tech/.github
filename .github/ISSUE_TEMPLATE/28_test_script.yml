@@ -5,6 +5,43 @@ projects:
   - doublebridge-tech/30
 assignees: [HuQiong-DB]
 body:
+  - type: textarea
+    id: purpose
+    attributes:
+      label: Purpose
+      description: Describe the purpose of this test script.
+      placeholder: |
+    validations:
+      required: true
+    id: precondistions
+    attributes:
+      label: Pre-condidtions
+      description: List the conditions before the test can start.
+      placeholder: |
+        1
+        2 
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: Test steps
+      description: List the test steps.
+      placeholder: |
+        1
+        2 
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance criteria/Exepcted Results
+      description: List the expected results and acceptance criteria this test script must validate.
+      placeholder: |
+        - 
+        - 
+    validations:
+      required: true
   - type: input
     id: linked_repository
     attributes:
@@ -12,7 +49,7 @@ body:
       description: Repository URL or owner/repo name related to this test script.
       placeholder: https://github.com/org/repo or org/repo
     validations:
-      required: true
+      required: false
   - type: input
     id: linked_issue
     attributes:
@@ -20,17 +57,7 @@ body:
       description: Issue URL or issue key this test script supports.
       placeholder: https://github.com/org/repo/issues/123
     validations:
-      required: true
-  - type: textarea
-    id: acceptance_criteria
-    attributes:
-      label: Acceptance criteria
-      description: List the acceptance criteria this test script must validate.
-      placeholder: |
-        - 
-        - 
-    validations:
-      required: true
+      required: false
   - type: textarea
     id: linked_test_scripts
     attributes:
@@ -40,4 +67,4 @@ body:
         - https://...
         - tests/path/to/script
     validations:
-      required: true
+      required: false
