@@ -24,7 +24,7 @@ body:
       label: Acceptance Criteria
       description: The criteria that must be met for the feature to be considered complete.
     validations:
-      required: true
+      required: false
   - type: textarea
     id: design_considerations
     attributes:
